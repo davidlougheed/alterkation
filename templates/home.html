@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Home | Alterkation</title>
+        <script src="https://unpkg.com/react@15.3.1/dist/react.js"></script>
+        <script src="https://unpkg.com/react-dom@15.3.1/dist/react-dom.js"></script>
+        <script src="https://unpkg.com/babel-core@5.8.38/browser.min.js"></script>
+        <script src="{{ url_for('static', filename='components/jquery/dist/jquery.min.js') }}"></script>
+        <script src="{{ url_for('static', filename='components/trumbowyg/dist/trumbowyg.min.js') }}"></script>
+
+        <link href="https://fonts.googleapis.com/css?family=Lora:400,400i,700,700i|Open+Sans:400,400i,700,700i"
+              rel="stylesheet">
+        <link href="{{ url_for('static', filename='components/trumbowyg/dist/ui/trumbowyg.min.css') }}"
+              rel="stylesheet">
+
+        <link rel="stylesheet" href="{{ url_for('static', filename='reset.css') }}">
+        <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    </head>
+    <body>
+        <div id="content"></div>
+
+        <script type="text/babel" src="{{ url_for('static', filename='main.js') }}"></script>
+    </body>
+</html>

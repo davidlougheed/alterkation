@@ -1,0 +1,6 @@
+.DS_Store
+.vscode
+config.py
+static/components
+cockroach-data
+env

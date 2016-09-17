@@ -1,0 +1,21 @@
+{
+  "name": "alterkation",
+  "authors": [
+    "David Lougheed <david.lougheed@gmail.com>"
+  ],
+  "description": "",
+  "main": "app.py",
+  "license": "NA",
+  "homepage": "",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "trumbowyg": "^2.3.0"
+  }
+}

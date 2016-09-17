@@ -1,0 +1,377 @@
+body {
+    background-color: #F9F9F9;
+}
+
+header {
+    position: fixed;
+    z-index: 100;
+    background-color: #FEFEFE;
+    width: 100%; height: 60px;
+    border-bottom: 1px solid #E9E9E9;
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+}
+
+header h1 {
+    margin: 0 0 0 30px;
+    font-size: 1.2rem;
+    line-height: 60px;
+    float: left;
+    font-family: "Open Sans", sans-serif;
+    font-weight: normal;
+    color: #666;
+}
+
+header nav {
+    float: right;
+    margin-right: 30px;
+}
+header nav ul {
+    list-style: none;
+    margin: 15px 0 0 0; padding: 0;
+    height: 30px;
+}
+header nav ul li {
+    display: inline-block;
+    height: 30px;
+    line-height: 28px;
+    margin-left: 0.8rem;
+}
+header nav ul li a {
+    display: block;
+    box-sizing: border-box;
+    height: 30px;
+    text-decoration: none;
+    font-size: 0.88rem;
+    font-family: "Open Sans", sans-serif;
+    color: #888;
+    transition: background-color 0.1s, color 0.1s;
+}
+header nav ul li a:hover {
+    color: #555;
+    transition: color 0.1s;
+}
+header nav ul li.highlight a {
+    padding: 0 0.8rem;
+    border: 1px solid #888;
+    border-radius: 15px;
+    transition: border-color 0.1s;
+}
+header nav ul li.highlight a:hover {
+    border-color: #555;
+    transition: border-color 0.1s;
+}
+header nav ul li.highlight a:active {
+    border-color: #555;
+    background-color: #555;
+    color: #EEE;
+    transition: background-color 0.1s, color 0.1s;
+}
+
+.contentContainer {
+    overflow-x: auto; overflow-y: hidden;
+    position: absolute;
+    z-index: 95;
+    top: 60px; bottom: 0; left: 0; right: 0;
+    white-space: nowrap;
+    font-size: 0;
+}
+
+.contentContainer .contentColumn {
+    width: 50%;
+    display: inline-block;
+    vertical-align: top;
+    white-space: normal;
+    font-size: 1rem;
+    position: absolute;
+    top: 0; bottom: 0;
+    transition: width 0.2s ease-in-out;
+}
+
+.conversationsContainer {
+    background-color: #FEFEFE;
+    border-right: 1px solid #F0F0F0;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    overflow-y: auto;
+}
+.conversationsContainer ul.conversationList {
+    list-style: none;
+    margin: 0; padding: 0;
+}
+.conversationsContainer ul.conversationList li.conversationListItem {
+    border-bottom: 1px solid #F3F3F3;
+    min-height: 60px;
+    padding: 15px 30px;
+    box-sizing: border-box;
+}
+.conversationsContainer ul.conversationList li.conversationListItem.selected {
+    background-color: #F3F3F3;
+}
+.conversationsContainer ul.conversationList li.conversationListItem a.conversationLink {
+    font-weight: bold;
+    font-size: 0.9rem;
+    font-family: "Open Sans", sans-serif;
+    color: #444;
+    cursor: pointer;
+}
+.conversationsContainer ul.conversationList li.selected a.conversation-link {
+    text-decoration: none;
+}
+.conversationsContainer ul.conversationList li div.conversationSummary {
+    line-height: 1.4em;
+    color: #888;
+    font-family: "Open Sans", sans-serif;
+    font-size: 0.8rem;
+}
+.conversationsContainer ul.conversationList li div.conversationSummary p {
+    margin: 5px 0 0 0;
+}
+
+div.postContainer {
+    width: 50%;
+    padding: 30px 30px 30px 30px;
+    display: inline-block;
+    vertical-align: top;
+    box-sizing: border-box;
+
+    overflow-y: scroll;
+    text-align: right;
+    white-space: normal;
+}
+
+div.post {
+    text-align: left;
+    padding: 60px;
+    box-sizing: border-box;
+    background-color: #FDFDFD;
+    border: 1px solid #ECECEC;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+div.post h1.postTitle {
+    margin-top: 0;
+    color: #444;
+    font-family: "Open Sans", sans-serif;
+    font-weight: normal;
+    font-size: 1.6rem;
+    line-height: 1.2em;
+}
+div.post div.postTagline {
+    padding-bottom: 1rem;
+    margin-bottom: 1rem;
+    border-bottom: 1px solid #F2F2F2;
+
+    font-weight: bold;
+    font-family: "Open Sans", sans-serif;
+    font-size: 0.9rem;
+    color: #666;
+}
+div.post div.postBody {
+    line-height: 1.5em;
+    font-size: 1.1rem;
+    font-family: "Lora", sans-serif;
+    color: #222;
+}
+div.post div.postBody p:last-child {
+    margin-bottom: 0;
+}
+
+div.comments-container {
+    width: 50%;
+    display: inline-block;
+    vertical-align: top;
+
+    overflow-y: auto;
+    overflow-x: hidden;
+    white-space: normal;
+}
+
+div.comment {
+    padding: 30px; margin: 30px 30px 30px 0;
+    width: calc(100% - 60px);
+    box-sizing: border-box;
+    background-color: #FBFBFB;
+    border: 1px solid #ECECEC;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    position: relative;
+}
+div.comment:after {
+    position: absolute;
+    left: calc(100% + 15px); top: -1px;
+    z-index: 90;
+    content: "";
+    height: 100%;
+    width: 30px;
+    background-color: #FBFBFB;
+    border: 1px solid #ECECEC;
+    border-right: none;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.01);
+}
+div.comment:before {
+    position: absolute;
+    left: calc(100% + 15px); top: -3px;
+    z-index: 91;
+    content: "";
+    height: calc(100% + 5px);
+    width: 34px;
+    background: linear-gradient(to right, rgba(249, 249, 249, 0) 0%, rgba(249, 249, 249, 1) 100%);
+}
+div.comment h2.commentTitle {
+    margin-top: 0; margin-bottom: 0;
+    color: #444;
+    font-family: "Open Sans", sans-serif;
+    font-weight: normal;
+    font-size: 1.3rem;
+    line-height: 1.2em;
+}
+div.comment div.commentTagline {
+    padding-bottom: 0.7rem;
+    margin: 0.3rem 0 0.7rem 0;
+    border-bottom: 1px solid #F2F2F2;
+
+    font-weight: bold;
+    font-family: "Open Sans", sans-serif;
+    font-size: 0.9rem;
+    color: #666;
+}
+div.comment p {
+    line-height: 1.5em;
+    font-size: 0.95rem;
+    font-family: "Lora", sans-serif;
+    color: #222;
+}
+div.comment p:last-child {
+    margin-bottom: 0;
+}
+
+button {
+    display: inline-block;
+    padding: 0 0.8rem;
+    border: 1px solid #888;
+    border-radius: 15px;
+    height: 30px;
+    line-height: 28px;
+    transition: border-color 0.1s;
+    font-size: 0.88rem;
+    font-family: "Open Sans", sans-serif;
+    background: none;
+    color: #888;
+
+    transition: background-color 0.1s, color 0.1s;
+
+    outline: none;
+}
+button.secondary {
+    border: none;
+    color: #AAA;
+}
+button:hover {
+    border-color: #555;
+    transition: border-color 0.1s;
+}
+button:active {
+    border-color: #555;
+    background-color: #555;
+    color: #EEE;
+    transition: background-color 0.1s, color 0.1s;
+    outline: none;
+}
+
+button.createPostButton {
+    position: absolute;
+    right: 30px; bottom: 30px;
+}
+
+.signInFormContainer, .registerFormContainer, .createPostFormContainer {
+    position: fixed;
+    z-index: 200;
+    top: 0; right: 0; bottom: 0; left: 0;
+    background-color: rgba(0, 0, 0, 0.15);
+    -webkit-backdrop-filter: blur(4px);
+}
+.signInFormContainer form, .registerFormContainer form {
+    width: 50%;
+    margin-left: 25%;
+    margin-top: 120px;
+    box-sizing: border-box;
+    background-color: #FEFEFE;
+    border-radius: 10px;
+    border: 1px solid #CCC;
+    padding: 30px;
+    box-shadow: 0 1px 15px rgba(0, 0, 0, 0.05);
+}
+.createPostFormContainer form {
+    position: absolute;
+    top: 30px; right: 30px; bottom: 30px; left: 30px;
+    background-color: #FEFEFE;
+    border-radius: 10px;
+    border: 1px solid #CCC;
+    padding: 30px;
+    box-shadow: 0 1px 15px rgba(0, 0, 0, 0.05);
+    overflow-y: auto;
+}
+.createPostFormContainer hr {
+    border: none;
+    height: 0;
+    margin: 30px -30px 30px -30px;
+    border-bottom: 1px solid #E9E9E9;
+}
+.createPostFormContainer form button[type="submit"] {
+    margin-top: 0;
+}
+.createPostFormContainer form input:last-of-type {
+    margin-bottom: 15px;
+}
+
+form label {
+    font-weight: bold;
+    display: block;
+    font-family: "Open Sans";
+    color: #333;
+    margin-bottom: 4px;
+    font-size: 0.88rem;
+}
+form input {
+    margin-bottom: 15px;
+    padding: 0.3rem;
+    width: 100%;
+    box-sizing: border-box;
+    border: 1px solid #E9E9E9;
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.02);
+    font-size: 0.88rem;
+    font-family: "Open Sans", sans-serif;
+    color: #666;
+}
+form input:focus {
+    border-color: #888;
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.05);
+    transition: border-color 0.1s box-shadow 0.1s;
+    outline: none;
+}
+form input:last-of-type {
+    margin-bottom: 0;
+}
+form button[type="submit"] {
+    margin-top: 30px;
+}
+
+.trumbowyg-editor {
+    font-family: "Lora", serif;
+    font-size: 1.1rem;
+    line-height: 1.4em;
+}
+.trumbowyg-editor strong {
+    font-weight: bold;
+}
+.trumbowyg-editor em {
+    font-style: italic;
+}
+.trumbowyg-editor p {
+    margin: 0.5em 0;
+}
+
+@media screen and (max-width: 860px) {
+    #content-container .content-column {
+        width: 75%;
+        transition: width 0.2s ease-in-out;
+    }
+}
