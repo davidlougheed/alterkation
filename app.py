@@ -21,9 +21,9 @@ class MLStripper(HTMLParser):
     def get_data(self):
         return "".join(self.fed)
 
-app = Flask(__name__)
-app.config.from_pyfile("config.py")
-db = SQLAlchemy(app)
+application = Flask(__name__)
+application.config.from_pyfile("config.py")
+db = SQLAlchemy(application)
 session_maker = sqlalchemy.orm.sessionmaker(db.engine)
 
 
@@ -113,13 +113,13 @@ class Post(db.Model):
 
 
 
-@app.route("/", methods=["GET"])
+@application.route("/", methods=["GET"])
 def home():
     def callback(session):
         return render_template("home.html")
     return run_transaction(session_maker, callback)
 
-@app.route("/api/register", methods=["POST"])
+@application.route("/api/register", methods=["POST"])
 def register():
     json_data = request.json
     print(json_data)
@@ -141,7 +141,7 @@ def register():
 
     return jsonify({'result': status})
 
-@app.route("/api/sign_in", methods=["POST"])
+@application.route("/api/sign_in", methods=["POST"])
 def sign_in():
     json_data = request.json
 
@@ -155,20 +155,20 @@ def sign_in():
 
     return jsonify({ "result": status })
 
-@app.route("/api/sign_out", methods=["GET"])
+@application.route("/api/sign_out", methods=["GET"])
 def sign_out():
     # TODO: This might be succeptible to a cookie attack
     session.clear()
     return jsonify({ "result": True })
 
-@app.route("/api/signed_in", methods=["GET"])
+@application.route("/api/signed_in", methods=["GET"])
 def logged_in():
     r = None
     if session.get("user_email"):
         r = session["user_email"]
     return jsonify({ "user": r })
 
-@app.route("/api/posts", methods=["GET", "POST"])
+@application.route("/api/posts", methods=["GET", "POST"])
 def post_handler():
     if request.method == "POST":
         if session["user_email"]:
@@ -212,7 +212,7 @@ def post_handler():
                 # Post
                 functions.add_new_post(str(owner.id), str(new_post.id))
             else:
-                functions.add_comment(str(owner.id), str(new_post.id), new_post.score)
+                functions.add_comment(str(owner.id), str(new_post.root_id), new_post.score)
 
             return jsonify({ "result": status })
         else:
@@ -225,7 +225,7 @@ def post_handler():
         return jsonify(data=object_dicts)
 
 
-@app.route("/api/posts/front_page", methods=["GET"])
+@application.route("/api/posts/front_page", methods=["GET"])
 def front_page_post_data():
     # TODO: MAKE THIS ACTUALLY FILTER BY FRONT PAGE ALGORITHMS
     objects = (list(Post.query.filter_by(parent_id=None)))
@@ -240,7 +240,7 @@ def front_page_post_data():
 
     return jsonify(data=object_dicts_sorted)
 
-@app.route("/api/posts/with_parent/<int:post_id>", methods=["GET"])
+@application.route("/api/posts/with_parent/<int:post_id>", methods=["GET"])
 def posts_with_parent(post_id):
     # TODO: MAKE THIS ACTUALLY FILTER BY FRONT PAGE ALGORITHMS
     objects = (list(Post.query.filter_by(parent_id=post_id)))
@@ -249,11 +249,11 @@ def posts_with_parent(post_id):
         object_dicts.append(o.to_dict())
     return jsonify(data=object_dicts)
 
-@app.route("/api/posts/<int:post_id>", methods=["GET"])
+@application.route("/api/posts/<int:post_id>", methods=["GET"])
 def post_data(post_id):
     return jsonify(Post.query.filter_by(id=post_id).first().to_dict())
 
-@app.route("/api/posts/<int:post_id>/depth", methods=["GET"])
+@application.route("/api/posts/<int:post_id>/depth", methods=["GET"])
 def post_depth(post_id):
     post_dict = Post.query.filter_by(id=post_id).first().to_dict()
     parent_dict = {}
@@ -265,7 +265,7 @@ def post_depth(post_id):
 
     return jsonify({ "depth": post_depth })
 
-@app.route("/api/posts/<int:post_id>/comment_chain", methods=["GET"])
+@application.route("/api/posts/<int:post_id>/comment_chain", methods=["GET"])
 def post_comment_chain(post_id):
     post_dict = Post.query.filter_by(id=post_id).first().to_dict()
     comment_chain = []
@@ -276,7 +276,7 @@ def post_comment_chain(post_id):
 
     return jsonify({ "chain": comment_chain })
 
-@app.route("/api/posts/<int:post_id>/children", methods=["GET"])
+@application.route("/api/posts/<int:post_id>/children", methods=["GET"])
 def post_children_data(post_id):
     # TODO: Order
     objects = Post.query.filter_by(parent_id=post_id).all()
@@ -286,4 +286,4 @@ def post_children_data(post_id):
     return jsonify(object_dicts)
 
 if __name__ == "__main__":
-    app.run()
+    application.run()
