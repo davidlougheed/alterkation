@@ -9,6 +9,7 @@ import sqlalchemy.orm
 from cockroachdb.sqlalchemy import run_transaction
 
 import custom_config
+import functions
 
 class MLStripper(HTMLParser):
     def __init__(self):
@@ -47,25 +48,31 @@ class Post(db.Model):
     # Foreign Keys
 
     parent_id = db.Column(db.Integer, db.ForeignKey("post.id"), nullable=True)
-    parent = db.relationship("Post", foreign_keys=[parent_id])
+    parent = db.relationship("Post", primaryjoin=("post.c.id==post.c.parent_id"), remote_side="Post.id", backref=db.backref("children"))
 
     root_id = db.Column(db.Integer, db.ForeignKey("post.id"), nullable=True)
-    root = db.relationship("Post", foreign_keys=[root_id])
+    root = db.relationship("Post", primaryjoin=("post.c.id==post.c.root_id"), remote_side="Post.id", backref=db.backref("deep_children"))
 
     owner_id = db.Column(db.Integer, db.ForeignKey("user.id"))
-    owner = db.relationship("User")
+    owner = db.relationship("User", backref="posts")
 
     def __init__(self, title, body, parent, root, owner, score=None, weight=None, created=None):
         self.title = title
         self.body = body
+        self.parent = None
         if parent is not None:
             self.parent = parent
+            self.parent_id = parent.id
         if root is not None:
             self.root = root
+            self.root_id = root.id
         self.owner = owner
+        self.owner_id = owner.id
 
         if created is None:
-            created = datetime.utcnow()
+            self.created = datetime.utcnow()
+        else:
+            self.created = created
 
         if score is None:
             # TODO: Some error handling if this goes wrong...
@@ -83,7 +90,14 @@ class Post(db.Model):
             print("---RAW---")
             print(r.content)
             rd = r.json()
-            self.score = 2.0 * float(rd["docSentiment"]["score"])
+
+            if "score" in rd["docSentiment"]:
+                self.score = float(rd["docSentiment"]["score"])
+            else:
+                self.score = 0
+
+        if parent is not None:
+            self.score = self.parent.score * self.score
 
     def to_dict(self):
         return {
@@ -123,9 +137,11 @@ def register():
     except:
         status = "already_registered"
 
+    functions.add_user(User.query.filter_by(email=json_data["email"]).first().id)
+
     return jsonify({'result': status})
 
-@app.route("/api/sign_in", methods=['POST'])
+@app.route("/api/sign_in", methods=["POST"])
 def sign_in():
     json_data = request.json
 
@@ -138,6 +154,12 @@ def sign_in():
         status = False
 
     return jsonify({ "result": status })
+
+@app.route("/api/sign_out", methods=["GET"])
+def sign_out():
+    # TODO: This might be succeptible to a cookie attack
+    session.clear()
+    return jsonify({ "result": True })
 
 @app.route("/api/signed_in", methods=["GET"])
 def logged_in():
@@ -158,8 +180,15 @@ def post_handler():
             title = s.get_data()
 
             body = json_data["body"] # TODO: Strip out script tags, similar
-            parent = json_data["parent"]
-            root = json_data["root"]
+            parent_id = json_data["parent"]
+            parent = None
+            if parent_id is not None:
+                parent = Post.query.filter_by(id=int(parent_id)).first()
+                print(parent)
+            root_id = json_data["root"]
+            root = None
+            if root_id is not None:
+                root = Post.query.filter_by(id=int(root_id)).first()
 
             owner = User.query.filter_by(email=session["user_email"]).first()
 
@@ -179,6 +208,12 @@ def post_handler():
                 print(str(e))
                 status = False
 
+            if root is None:
+                # Post
+                functions.add_new_post(str(owner.id), str(new_post.id))
+            else:
+                functions.add_comment(str(owner.id), str(new_post.id), new_post.score)
+
             return jsonify({ "result": status })
         else:
             abort(403)
@@ -189,10 +224,26 @@ def post_handler():
             object_dicts.append(o.to_dict())
         return jsonify(data=object_dicts)
 
+
 @app.route("/api/posts/front_page", methods=["GET"])
 def front_page_post_data():
     # TODO: MAKE THIS ACTUALLY FILTER BY FRONT PAGE ALGORITHMS
-    objects = (list(Post.query.all()))
+    objects = (list(Post.query.filter_by(parent_id=None)))
+    object_dicts = []
+    for o in objects:
+        object_dicts.append(o.to_dict())
+        object_dicts[len(object_dicts) - 1]["weight"] = 0.0
+        if session.get("user_email"):
+            object_dicts[len(object_dicts) - 1]["weight"] = functions.sentiment(str(User.query.filter_by(email=session["user_email"]).first().id), str(o.id))
+
+    object_dicts_sorted = sorted(object_dicts, key=lambda obj: obj["weight"])
+
+    return jsonify(data=object_dicts_sorted)
+
+@app.route("/api/posts/with_parent/<int:post_id>", methods=["GET"])
+def posts_with_parent(post_id):
+    # TODO: MAKE THIS ACTUALLY FILTER BY FRONT PAGE ALGORITHMS
+    objects = (list(Post.query.filter_by(parent_id=post_id)))
     object_dicts = []
     for o in objects:
         object_dicts.append(o.to_dict())
@@ -202,9 +253,37 @@ def front_page_post_data():
 def post_data(post_id):
     return jsonify(Post.query.filter_by(id=post_id).first().to_dict())
 
+@app.route("/api/posts/<int:post_id>/depth", methods=["GET"])
+def post_depth(post_id):
+    post_dict = Post.query.filter_by(id=post_id).first().to_dict()
+    parent_dict = {}
+    post_depth = -1 # -1 Indicates a top level post. 0 indicates a first-level comment.
+    while post_dict["parent_id"] != "None":
+        print(post_dict["parent_id"])
+        post_dict = Post.query.filter_by(id=int(post_dict["parent_id"])).first().to_dict()
+        post_depth += 1
+
+    return jsonify({ "depth": post_depth })
+
+@app.route("/api/posts/<int:post_id>/comment_chain", methods=["GET"])
+def post_comment_chain(post_id):
+    post_dict = Post.query.filter_by(id=post_id).first().to_dict()
+    comment_chain = []
+    parent_dict = {}
+    while post_dict["parent_id"] != "None":
+        comment_chain.insert(0, post_dict["id"])
+        post_dict = Post.query.filter_by(id=int(post_dict["parent_id"])).first().to_dict()
+
+    return jsonify({ "chain": comment_chain })
+
 @app.route("/api/posts/<int:post_id>/children", methods=["GET"])
 def post_children_data(post_id):
-    return jsonify(dict(Post.query.filter_by(parent_id=post_id).all()))
+    # TODO: Order
+    objects = Post.query.filter_by(parent_id=post_id).all()
+    object_dicts = []
+    for o in objects:
+        object_dicts.append(o.to_dict())
+    return jsonify(object_dicts)
 
 if __name__ == "__main__":
     app.run()

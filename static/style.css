@@ -69,7 +69,7 @@ header nav ul li.highlight a:active {
 }
 
 .contentContainer {
-    overflow-x: auto; overflow-y: hidden;
+    overflow: hidden;
     position: absolute;
     z-index: 95;
     top: 60px; bottom: 0; left: 0; right: 0;
@@ -94,6 +94,10 @@ header nav ul li.highlight a:active {
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
     overflow-y: auto;
 }
+.conversationsContainer.clickableEdge {
+    width: calc(50% + 15px);
+    cursor: pointer;
+}
 .conversationsContainer ul.conversationList {
     list-style: none;
     margin: 0; padding: 0;
@@ -117,13 +121,11 @@ header nav ul li.highlight a:active {
 .conversationsContainer ul.conversationList li.selected a.conversation-link {
     text-decoration: none;
 }
-.conversationsContainer ul.conversationList li div.conversationSummary {
+.conversationsContainer ul.conversationList li p.conversationSummary {
     line-height: 1.4em;
     color: #888;
     font-family: "Open Sans", sans-serif;
     font-size: 0.8rem;
-}
-.conversationsContainer ul.conversationList li div.conversationSummary p {
     margin: 5px 0 0 0;
 }
 
@@ -137,15 +139,26 @@ div.postContainer {
     overflow-y: scroll;
     text-align: right;
     white-space: normal;
+    pointer-events: none;
 }
 
 div.post {
+    width: 100%;
     text-align: left;
     padding: 60px;
     box-sizing: border-box;
     background-color: #FDFDFD;
     border: 1px solid #ECECEC;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    transition: width 0.1s;
+    pointer-events: auto;
+}
+div.post.selected {
+    /*box-shadow: 0 1px 8px rgba(0, 0, 0, 0.05);*/
+    /*border: 1px solid #888;*/
+    width: calc(100% - 15px);
+    transition: width 0.1s;
+    float: right;
 }
 div.post h1.postTitle {
     margin-top: 0;
@@ -174,27 +187,43 @@ div.post div.postBody {
 div.post div.postBody p:last-child {
     margin-bottom: 0;
 }
+div.post div.postControls {
+    margin-top: 30px;
+    text-align: right;
+}
+div.post div.postControls button {
+    margin-left: 0.8em;
+}
 
-div.comments-container {
+div.commentsContainer {
     width: 50%;
     display: inline-block;
     vertical-align: top;
 
-    overflow-y: auto;
     overflow-x: hidden;
     white-space: normal;
 }
 
+div.commentLevelContainer {
+    overflow-y: auto;
+}
+
 div.comment {
-    padding: 30px; margin: 30px 30px 30px 0;
-    width: calc(100% - 60px);
+    padding: 30px; margin: 30px;
     box-sizing: border-box;
     background-color: #FBFBFB;
     border: 1px solid #ECECEC;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
     position: relative;
 }
-div.comment:after {
+div.comment.selected {
+    box-shadow: 0 1px 8px rgba(0, 0, 0, 0.05);
+    border: 1px solid #888;
+}
+div.comment.more {
+    width: calc(100% - 60px);
+}
+div.comment.more:after {
     position: absolute;
     left: calc(100% + 15px); top: -1px;
     z-index: 90;
@@ -206,7 +235,7 @@ div.comment:after {
     border-right: none;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.01);
 }
-div.comment:before {
+div.comment.more:before {
     position: absolute;
     left: calc(100% + 15px); top: -3px;
     z-index: 91;
@@ -233,14 +262,21 @@ div.comment div.commentTagline {
     font-size: 0.9rem;
     color: #666;
 }
-div.comment p {
+div.comment div.commentBody {
     line-height: 1.5em;
     font-size: 0.95rem;
     font-family: "Lora", sans-serif;
     color: #222;
 }
-div.comment p:last-child {
+div.comment div.commentBody p:last-child {
     margin-bottom: 0;
+}
+div.comment div.commentControls {
+    margin-top: 30px;
+    text-align: right;
+}
+div.comment div.commentControls button {
+    margin-left: 0.8em;
 }
 
 button {
@@ -266,6 +302,7 @@ button.secondary {
 }
 button:hover {
     border-color: #555;
+    color: #555;
     transition: border-color 0.1s;
 }
 button:active {
@@ -281,7 +318,7 @@ button.createPostButton {
     right: 30px; bottom: 30px;
 }
 
-.signInFormContainer, .registerFormContainer, .createPostFormContainer {
+.signInFormContainer, .registerFormContainer, .createPostFormContainer, .createCommentFormContainer {
     position: fixed;
     z-index: 200;
     top: 0; right: 0; bottom: 0; left: 0;
@@ -299,7 +336,7 @@ button.createPostButton {
     padding: 30px;
     box-shadow: 0 1px 15px rgba(0, 0, 0, 0.05);
 }
-.createPostFormContainer form {
+.createPostFormContainer form, .createCommentFormContainer form {
     position: absolute;
     top: 30px; right: 30px; bottom: 30px; left: 30px;
     background-color: #FEFEFE;
@@ -309,16 +346,16 @@ button.createPostButton {
     box-shadow: 0 1px 15px rgba(0, 0, 0, 0.05);
     overflow-y: auto;
 }
-.createPostFormContainer hr {
+.createPostFormContainer hr, .createCommentFormContainer hr {
     border: none;
     height: 0;
     margin: 30px -30px 30px -30px;
     border-bottom: 1px solid #E9E9E9;
 }
-.createPostFormContainer form button[type="submit"] {
+.createPostFormContainer form button[type="submit"], .createCommentFormContainer form button[type="submit"] {
     margin-top: 0;
 }
-.createPostFormContainer form input:last-of-type {
+.createPostFormContainer form input:last-of-type, .createCommentFormContainer form input:last-of-type {
     margin-bottom: 15px;
 }
 
@@ -352,6 +389,24 @@ form input:last-of-type {
 }
 form button[type="submit"] {
     margin-top: 30px;
+}
+
+button.backButton {
+    width: 20px;
+    height: 60px;
+    position: fixed;
+    top: 90px; left: 5px;
+    border-radius: 100%;
+    font-size: 2rem;
+    line-height: 50px;
+    padding: 0 5px 5px 0;
+    vertical-align: top;
+    border: none;
+    z-index: 500;
+}
+button.backButton:active {
+    background-color: none !important;
+    color: #AAA;
 }
 
 .trumbowyg-editor {
