@@ -118,6 +118,11 @@ header nav ul li.highlight a:active {
     color: #444;
     cursor: pointer;
 }
+.conversationsContainer ul.conversationList li.conversationListItem span.conversationDate {
+    font-weight: normal;
+    color: #888;
+    float: right;
+}
 .conversationsContainer ul.conversationList li.selected a.conversation-link {
     text-decoration: none;
 }

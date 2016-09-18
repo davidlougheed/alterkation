@@ -94,7 +94,7 @@ var ConversationListItem = React.createClass({
 
         return (
             <li className={itemClasses} onClick={this.props.onItemClick}>
-                <a className="conversationLink">{this.props.children}</a>
+                <a className="conversationLink">{this.props.children} <span className="conversationDate">{this.props.date}</span></a>
                 <p className="conversationSummary">{this.props.summary}</p>
             </li>
         );
@@ -128,6 +128,7 @@ var ConversationsList = React.createClass({
 
             return (
                 <ConversationListItem key={conversation.id} summary={summary} onItemClick={boundItemSelect}
+                                      date={conversation.created}
                                       selected={itemSelected}>
                     {conversation.title}
                 </ConversationListItem>
@@ -745,7 +746,7 @@ var ContentContainer = React.createClass({
             opacity: "0"
         };
 
-        if (this.state.scrollOffset >= 1) {
+        if (this.state.scrollOffset >= 2) {
             backStyle.opacity = "1";
         }
 

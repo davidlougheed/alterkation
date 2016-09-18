@@ -108,7 +108,8 @@ class Post(db.Model):
             "weight": self.weight,
             "parent_id": str(self.parent_id),
             "root_id": str(self.root_id),
-            "owner_id": str(self.owner_id)
+            "owner_id": str(self.owner_id),
+            "created": self.created.date().isoformat()
         }
 
 
