@@ -175,7 +175,7 @@ div.post h1.postTitle {
 }
 div.post div.postTagline {
     padding-bottom: 1rem;
-    margin-bottom: 1rem;
+    margin: 0.5rem 0 0.5rem 0;
     border-bottom: 1px solid #F2F2F2;
 
     font-weight: bold;
@@ -259,7 +259,7 @@ div.comment h2.commentTitle {
 }
 div.comment div.commentTagline {
     padding-bottom: 0.7rem;
-    margin: 0.3rem 0 0.7rem 0;
+    margin: 0.5rem 0 0.5rem 0;
     border-bottom: 1px solid #F2F2F2;
 
     font-weight: bold;

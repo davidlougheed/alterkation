@@ -404,7 +404,7 @@ var Post = React.createClass({
     },
 
     render: function () {
-        var postData = this.props.data.hasOwnProperty("title") ? this.props.data : { title: "", tagLine: "", body: "" };
+        var postData = this.props.data.hasOwnProperty("title") ? this.props.data : { title: "", created: "", body: "" };
         var createMarkup = function () {
             return { __html: postData.body };
         }.bind(this);
@@ -419,17 +419,24 @@ var Post = React.createClass({
             );
         }
 
+        var addCommentButton = null;
+        if (true) {
+            addCommentButton = (
+                <button className="addCommentButton" onClick={this.handleAddCommentClick}>
+                    Add A Comment
+                </button>
+            );
+        }
+
         if (postData["title"].length > 0) {
             return (
                 <div className={itemClasses}>
                     <h1 className="postTitle">{postData.title}</h1>
-                    <div className="postTagline">{postData.tagLine}</div>
+                    <div className="postTagline">{postData.created}</div>
                     <div className="postBody" dangerouslySetInnerHTML={createMarkup()}></div>
                     <div className="postControls">
                         {viewDiscussion}
-                        <button className="addCommentButton" onClick={this.handleAddCommentClick}>
-                            Add A Comment
-                        </button>
+                        {addCommentButton}
                     </div>
                 </div>
             )
@@ -537,7 +544,7 @@ var Comment = React.createClass({
     },
 
     render: function () {
-        var commentData = this.props.data.hasOwnProperty("title") ? this.props.data : { title: "", tagLine: "", body: "" };
+        var commentData = this.props.data.hasOwnProperty("title") ? this.props.data : { title: "", created: "", body: "" };
         var createMarkup = function () {
             return { __html: commentData.body };
         }.bind(this);
@@ -555,7 +562,7 @@ var Comment = React.createClass({
         return (
             <div className={itemClasses}>
                 <h2 className="commentTitle">{commentData.title}</h2>
-                <div className="commentTagline">{commentData.tagLine}</div>
+                <div className="commentTagline">{commentData.created}</div>
                 <div className="commentBody" dangerouslySetInnerHTML={createMarkup()}></div>
                 <div className="commentControls">
                     {continueThread}
@@ -863,6 +870,10 @@ var RegisterForm = React.createClass({
         this.setState({ password_again: e.target.value });
     },
 
+    handleClientSignIn: function (email) {
+
+    },
+
     handleSubmit: function (e) {
         e.preventDefault();
         var email = this.state.email.trim();
@@ -889,7 +900,7 @@ var RegisterForm = React.createClass({
                             type: "POST",
                             data: JSON.stringify({ email: email, password: password }),
                             success: function (data) {
-                                // TODO: Do something to indicate sign-in
+                                this.handleClientSignIn(email);
                             }.bind(this),
                             error: function (xhr, status, err) {
                                 console.error(this.props.url, status, err.toString());

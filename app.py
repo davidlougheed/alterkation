@@ -40,7 +40,7 @@ class Post(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(255))
     body = db.Column(db.Text)
-    score = db.Column(db.Float)
+    score = db.Column(db.Float, nullable=True)
     weight = db.Column(db.Float, nullable=True)
 
     created = db.Column(db.DateTime)
@@ -74,7 +74,8 @@ class Post(db.Model):
         else:
             self.created = created
 
-        if score is None:
+        self.score = None
+        if score is None and parent is not None:
             # TODO: Some error handling if this goes wrong...
 
             s = MLStripper()
@@ -96,8 +97,9 @@ class Post(db.Model):
             else:
                 self.score = 0
 
-        if parent is not None:
-            self.score = self.parent.score * self.score
+        if parent is not None and score is not None:
+            if parent.score is not None:
+                self.score = self.parent.score * self.score
 
     def to_dict(self):
         return {
