@@ -658,7 +658,6 @@ var ContentContainer = React.createClass({
 
         if (this.state.selectedComment) {
             $.get("/api/posts/" + this.state.selectedComment, function (data) {
-                console.log(data);
                 this.setState({ selectedComment: data.parent_id });
             }.bind(this));
         }
@@ -871,7 +870,6 @@ var RegisterForm = React.createClass({
 
         if (password == password_again) {
             if (email.length > 0 && password.length > 0) {
-                console.log({ "email": email, "password": password, "password_again": password_again });
                 $.ajax({
                     url: this.props.url,
                     contentType: "application/json; charset=UTF-8",
@@ -881,7 +879,6 @@ var RegisterForm = React.createClass({
                         "email": email, "password": password, "password_again": password_again
                     }),
                     success: function (data) {
-                        console.log(data);
                         // TODO: Do something to indicate registration
 
                         $.ajax({
@@ -1037,9 +1034,9 @@ var AppContainer = React.createClass({
         var registerForm = this.state.showRegisterForm ? (<RegisterForm onCancelClick={this.handleRegisterCancelClick} url="/api/register" signInUrl="/api/sign_in" />) : null;
         var createPostForm = this.state.showCreatePostForm ? (<CreatePostForm onCancelClick={this.handleCreatePostCancelClick} onCreatePost={this.handleCreatePost} url="/api/posts" />) : null;
         var createCommentForm = this.state.showCreateCommentForm ? (
-            <CreateCommentForm onCancelClick={this.handleCreateCommentCancelClick}
-                               onCreateComment={this.handleCreateComment}
-                               onCancelClick={this.handleCreateCommentCancelClick}
+            <CreateCommentForm onCancelClick={this.handleAddCommentCancelClick}
+                               onCreateComment={this.handleAddComment}
+                               onCancelClick={this.handleAddCommentCancelClick}
                                url="/api/posts"
                                parent={this.state.commentParent} root={this.state.commentRoot} />
         ) : null;
