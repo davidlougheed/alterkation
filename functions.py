@@ -44,7 +44,7 @@ def update_ratio(USER,POST):
 				ratios[USER][key]["numShares"] += 1
 				ratios[key][USER]["numShares"] += 1
 				ratios[USER][key]["weight"] = weight
-				ratios[key][USER]["weight"] = weight;
+				ratios[key][USER]["weight"] = weight
 			#requests.post('https://alterkation.org',data = {USER:ratio[USER]})
 			#requests.post('https://alterkation.org',data = {USER:ratio[USER]})
 
@@ -163,6 +163,7 @@ def sentiment(USER,POST):
 	#Looks for value in position in table corresponding to user and post
 	#position based on negative of sentiment
 	#predictions = requests.get('https://alterkation.org')
+	read_data()
 	if USER in scores[POST]:
 		return scores[POST][USER]
 	else:
